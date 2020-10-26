@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>urquhart</name>
+  <version>0.0.0</version>
+  <description>The Urquhart Descriptor package</description>
+
+  <maintainer email="gnardari@usp.br">root</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>Eigen</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
+
+</package>
