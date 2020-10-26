@@ -20,7 +20,7 @@ namespace urquhart {
         private:
             void processObservation_();
             void computeDescriptor_();
-            void delaunayTriangulation_(std::vector<std::vector<double>>& points);
+            void delaunayTriangulation_(std::vector<std::vector<double>>& points, std::vector<Polygon>& polygons);
             void urquhartTesselation_();
             void mergeShapes_();
     };
