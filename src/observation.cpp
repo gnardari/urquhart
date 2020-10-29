@@ -3,7 +3,10 @@
 namespace urquhart
 {
 
-Observation::Observation(){
+Observation::Observation(PointVector& landmarks){
+    std::vector<Polygon> triangles;
+    delaunayTriangulation_(landmarks, triangles);
+    H = new Tree(triangles);
 };
 
 void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons){

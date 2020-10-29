@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Eigen3 REQUIRED)
+find_package(Boost REQUIRED)
 
 SET(qhullDir "/usr/local/")
 INCLUDE_DIRECTORIES(${qhullDir}/include/libqhullcpp)
@@ -33,11 +34,12 @@ catkin_package(
 add_executable(UrquhartNode
     src/test.cpp
     src/observation.cpp  
+    src/tree.cpp  
     src/utils.cpp  
     src/descriptor.cpp  
     )
 
-target_include_directories(UrquhartNode PUBLIC include ${catkin_INCLUDE_DIRS})
-target_link_libraries(UrquhartNode PUBLIC ${catkin_LIBRARIES} ${qhullLibs})
+target_include_directories(UrquhartNode PUBLIC include ${catkin_INCLUDE_DIRS}, ${Boost_INCLUDE_DIR})
+target_link_libraries(UrquhartNode PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${qhullLibs})
 SET_TARGET_PROPERTIES(UrquhartNode PROPERTIES
  COMPILE_DEFINITIONS "qh_QHpointer")

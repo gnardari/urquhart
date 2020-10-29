@@ -1,5 +1,6 @@
 #include <utils.hpp>
 #include <polygon.hpp>
+#include <tree.hpp>
 
 #include "libqhullcpp/RboxPoints.h"
 #include "libqhullcpp/QhullError.h"
@@ -16,12 +17,13 @@
 namespace urquhart {
     class Observation {
         public:
-            explicit Observation();
-            void delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons);
+            explicit Observation(PointVector& landmarks);
         private:
+            Tree* H;
             void processObservation_();
             void computeDescriptor_();
             void urquhartTesselation_();
+            void delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons);
             void mergeShapes_();
     };
 }

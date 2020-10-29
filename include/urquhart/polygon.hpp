@@ -1,8 +1,15 @@
+#pragma once
 #include <utils.hpp>
 
 namespace urquhart {
     class Polygon {
         public:
+            explicit Polygon(){
+                points = {};
+                neighbors = {};
+                edges = {};
+                edgeLengths = {};
+            }
             explicit Polygon(PointVector pp, std::vector<int> nn,
                         std::vector<EdgeT> ee, std::vector<double> el){
                 points = pp;

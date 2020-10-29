@@ -4,7 +4,7 @@ namespace urquhart {
 
 Tree::Tree(const std::vector<Polygon>& polygons){
     // create the root node
-    root = add_vertex(Polygon({},{},{},{}), graph);
+    root = add_vertex(Polygon(), graph);
     // add all elements and point them to the root
     for(auto p : polygons){
         BoostVertexT v = add_vertex(p, graph);
