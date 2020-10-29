@@ -17,10 +17,10 @@ namespace urquhart {
     class Observation {
         public:
             explicit Observation();
+            void delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons);
         private:
             void processObservation_();
             void computeDescriptor_();
-            void delaunayTriangulation_(std::vector<std::vector<double>>& points, std::vector<Polygon>& polygons);
             void urquhartTesselation_();
             void mergeShapes_();
     };
