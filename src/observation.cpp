@@ -9,6 +9,14 @@ Observation::Observation(PointVector& landmarks){
     H = new Tree(triangles);
 };
 
+void Observation::urquhartTesselation_(){
+    std::vector<size_t> leaves = H->traverse();
+    // for every triangle
+    // for(size_t i = 0; i < leaves.size(); ++i){
+    // }
+
+}
+
 void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons){
     std::vector<double> qhull_points_data(points.size() * 2);
     for (size_t pidx = 0; pidx < points.size(); ++pidx) {
@@ -29,18 +37,30 @@ void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygo
 
     // Delaunay regions as a vector of vectors
     orgQhull::QhullFacetListIterator k(q.facetList());
+
+    // the facet ids are confusing, we want to map the good facets to order of appearance
+    size_t fIdx = 0;
+    std::map<size_t, size_t> id_map;
+    for (auto e : q.facetList()){
+        if(e.isGood()){
+            id_map[e.id()] = fIdx;
+            fIdx++;
+        }
+    }
+
     while(k.hasNext()){
         orgQhull::QhullFacet f = k.next();
         if (!f.isGood()) continue;
 
-        // get neighbors for each edge of the triangle (facet)
+        // get neighbors for each edge of the triangle
         orgQhull::QhullFacetSet neighborsSet(f.neighborFacets());
-        auto neighbors = neighborsSet.toStdVector();
-        // this will only list neighbors that are also facet, so we complete with -1
-        std::vector<int> neighIds(3, -1);
-        for (auto i = 0; i < neighbors.size(); ++i){
-            neighIds[i] = neighbors[i].id();
-            // std::cout << "neigh: " << neighbors[i].id() << std::endl;
+        // this will only list neighbors that are also a good facet, so we complete with -1
+        std::vector<int> neighIds;
+        for (auto e : neighborsSet){
+            if(e.isGood())
+                neighIds.push_back(id_map[e.id()]);
+            else
+                neighIds.push_back(-1);
         }
 
         // get facet vertices
@@ -50,12 +70,9 @@ void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygo
         while(i.hasNext()){
             orgQhull::QhullVertex vertex= i.next();
             orgQhull::QhullPoint p = vertex.point();
-
-            // std::cout << "vtx: " << p.id() << std::endl;
             vertices.push_back(points[p.id()]);
             vtxIds.push_back(p.id());
         }
-        // std::cout << "------" << std::endl;
 
         // get facet edges
         std::vector<EdgeT> edges;

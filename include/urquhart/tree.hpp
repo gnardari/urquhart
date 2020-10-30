@@ -15,8 +15,8 @@ using BoostEdgeIter = graph_traits<BoostGraph>::out_edge_iterator;
 class BFSVisitor : public boost::default_bfs_visitor {
     public:    
         BFSVisitor(std::vector<BoostVertexT>& _visited) : visited(_visited){}
-        void discover_vertex(BoostVertexT s, const BoostGraph &g) { visited.push_back(s); }
-        void discover_vertex(BoostVertexT s, const BoostRGraph &g) { visited.push_back(s); }
+        void discover_vertex(BoostVertexT s, const BoostGraph &g) { if (s != 0) visited.push_back(s); }
+        void discover_vertex(BoostVertexT s, const BoostRGraph &g) { if (s != 0) visited.push_back(s); }
         std::vector<BoostVertexT>& visited;
 };
 
