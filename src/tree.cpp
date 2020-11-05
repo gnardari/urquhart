@@ -12,6 +12,10 @@ Tree::Tree(const std::vector<Polygon>& polygons){
     }
 }
 
+Polygon Tree::get_vertex(const BoostVertexT v){
+    return graph[v];
+}
+
 BoostVertexT Tree::merge_op(BoostVertexT i, BoostVertexT j, const Polygon& data){
     BoostVertexT v = add_vertex(data, graph);
     add_edge(root, v, graph);
@@ -46,12 +50,13 @@ BoostVertexT Tree::merge_op(BoostVertexT i, BoostVertexT j, const Polygon& data)
     return v;
 }
 
-std::vector<BoostVertexT> Tree::get_ancestor(const BoostVertexT v){
+BoostVertexT Tree::get_ancestor(const BoostVertexT v){
     BoostRGraph reversedGraph(graph);
     std::vector<BoostVertexT> polygons;
     BFSVisitor vis(polygons);
     breadth_first_search(reversedGraph, v, visitor(vis));
-    return polygons;
+    BoostVertexT ancestor = polygons[polygons.size()-2];
+    return ancestor;
 }
 
 std::vector<BoostVertexT> Tree::traverse(){

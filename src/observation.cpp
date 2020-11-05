@@ -7,14 +7,30 @@ Observation::Observation(PointVector& landmarks){
     std::vector<Polygon> triangles;
     delaunayTriangulation_(landmarks, triangles);
     H = new Tree(triangles);
+    urquhartTesselation_();
 };
 
 void Observation::urquhartTesselation_(){
     std::vector<size_t> leaves = H->traverse();
-    // for every triangle
-    // for(size_t i = 0; i < leaves.size(); ++i){
-    // }
-
+    for(size_t leaf : leaves){
+        Polygon p = H->get_vertex(leaf);
+        int neighId = -1;
+        double longestEdgeLen = -1;
+        for(int i=0; i < p.edgeLengths.size(); ++i){
+            if(p.edgeLengths[i] > longestEdgeLen){
+                longestEdgeLen = p.edgeLengths[i];
+                neighId = p.neighbors[i];
+            }
+        }
+        if(neighId == -1) continue;
+        Polygon n = H->get_vertex(neighId);
+        std::cout << "Poly neigh: " << neighId << std::endl;
+        std::cout << p.edgeLengths[0] << " " << p.edgeLengths[1] << " " << p.edgeLengths[2] << std::endl;
+        std::cout << p.neighbors[0] << " " << p.neighbors[1] << " " << p.neighbors[2] << std::endl;
+        std::cout << "------------------" << std::endl;
+        // size_t ancIdx = H->get_ancestor(neighId);
+        // Polygon ancestor = H->get_vertex(ancIdx);
+    }
 }
 
 void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons){
@@ -55,13 +71,18 @@ void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygo
         // get neighbors for each edge of the triangle
         orgQhull::QhullFacetSet neighborsSet(f.neighborFacets());
         // this will only list neighbors that are also a good facet, so we complete with -1
-        std::vector<int> neighIds;
+        std::vector<int> auxNeighIds;
+        std::vector<int> neighIds(3);
         for (auto e : neighborsSet){
             if(e.isGood())
-                neighIds.push_back(id_map[e.id()]);
+                auxNeighIds.push_back(id_map[e.id()]);
             else
-                neighIds.push_back(-1);
+                auxNeighIds.push_back(-1);
         }
+    
+        // shifting neighbor order to align with the edges (edge[i] will be shared with neighIds[i])
+        for(size_t i=1; i <= auxNeighIds.size(); ++i)
+            neighIds[i%auxNeighIds.size()] = auxNeighIds[i-1];
 
         // get facet vertices
         PointVector vertices;
@@ -77,9 +98,9 @@ void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygo
         // get facet edges
         std::vector<EdgeT> edges;
         std::vector<double> edgeLengths;
-        for (auto i = 0; i <= vtxIds.size(); ++i){
+        for (auto i = 0; i < vtxIds.size(); ++i){
             int endIdx = i + 1;
-            if(i == vtxIds.size())
+            if(endIdx == vtxIds.size())
                 endIdx = 0;
             auto edge = std::make_pair(vtxIds[i], vtxIds[endIdx]);
             double len = euclideanDistance(points[edge.first], points[edge.second]);

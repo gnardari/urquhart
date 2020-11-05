@@ -26,7 +26,8 @@ namespace urquhart {
         public:
             explicit Tree(const std::vector<Polygon>& polygons);
             BoostVertexT merge_op(BoostVertexT i, BoostVertexT j, const Polygon& data);
-            std::vector<BoostVertexT> get_ancestor(const BoostVertexT v);
+            Polygon get_vertex(const BoostVertexT v);
+            BoostVertexT get_ancestor(const BoostVertexT v);
             std::vector<BoostVertexT> traverse();
             std::vector<BoostVertexT> traverse(const BoostVertexT v);
             BoostGraph graph;
