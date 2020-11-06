@@ -1,4 +1,5 @@
 #include <tree.hpp>
+// #include <boost/graph/graphviz.hpp>
 
 namespace urquhart {
 
@@ -10,6 +11,7 @@ Tree::Tree(const std::vector<Polygon>& polygons){
         BoostVertexT v = add_vertex(p, graph);
         add_edge(root, v, graph);
     }
+    // write_graphviz(std::cout, graph);
 }
 
 Polygon Tree::get_vertex(const BoostVertexT v){
@@ -55,7 +57,9 @@ BoostVertexT Tree::get_ancestor(const BoostVertexT v){
     std::vector<BoostVertexT> polygons;
     BFSVisitor vis(polygons);
     breadth_first_search(reversedGraph, v, visitor(vis));
-    BoostVertexT ancestor = polygons[polygons.size()-2];
+    BoostVertexT ancestor = 0;
+    if(polygons.size() > 0)
+        ancestor = polygons[polygons.size()-1];
     return ancestor;
 }
 

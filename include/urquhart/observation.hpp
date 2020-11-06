@@ -24,6 +24,6 @@ namespace urquhart {
             void computeDescriptor_();
             void urquhartTesselation_();
             void delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons);
-            void mergeShapes_();
+            Polygon mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx);
     };
 }

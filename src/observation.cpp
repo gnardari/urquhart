@@ -23,14 +23,51 @@ void Observation::urquhartTesselation_(){
             }
         }
         if(neighId == -1) continue;
-        Polygon n = H->get_vertex(neighId);
-        std::cout << "Poly neigh: " << neighId << std::endl;
-        std::cout << p.edgeLengths[0] << " " << p.edgeLengths[1] << " " << p.edgeLengths[2] << std::endl;
-        std::cout << p.neighbors[0] << " " << p.neighbors[1] << " " << p.neighbors[2] << std::endl;
-        std::cout << "------------------" << std::endl;
-        // size_t ancIdx = H->get_ancestor(neighId);
-        // Polygon ancestor = H->get_vertex(ancIdx);
+
+        // we drop edges based on triangles,
+        // but we must merge the highest available polygon that leaf is part of
+        // (could be itself if it wasn't part of a merge operation before)
+        size_t leafAncIdx = H->get_ancestor(leaf);
+        size_t neighAncIdx = H->get_ancestor(neighId);
+        if(leafAncIdx != neighAncIdx){
+            Polygon n = H->get_vertex(neighId);
+            if(neighAncIdx != neighId)
+                n = H->get_vertex(neighAncIdx);
+
+            // neighId also points to the id of the common edge in p.edges
+            Polygon merged = mergePolygons_(p, n, neighId);
+        }
+
     }
+}
+
+Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
+    /*
+    (0,1), (1,2), (2,0)
+                        => (0,1), (1,2), (2,0), (4,0)
+    (2,0), (0,4), (4,2)
+    */
+   // rotates puts idx as first element, for p we want the common edge to be the last elem
+   p.rotate((commonEdgeIdx+1)%3);
+   EdgeT commonEdge = p.edges[commonEdgeIdx];
+
+   std::vector<EdgeT>::iterator it = std::find_if(n.edges.begin(), n.edges.end(),
+        [&commonEdge](EdgeT e){
+            if(e.first == commonEdge.first && e.second == commonEdge.second) return True;
+            if(e.second == commonEdge.first && e.first == commonEdge.second) {std::cout << "hey" << std::endl; return True;}
+            return False;
+        });
+
+    std::cout << it - n.edges.begin() << " will be first" << std::endl;
+    n.rotate(it - n.edges.begin());
+
+    size_t mergedSize = p.points.size() + n.points.size();
+    PointVector points(mergedSize);
+    std::vector<int> neighbors(mergedSize-1);
+    std::vector<EdgeT> edges(mergedSize-1);
+    std::vector<double> edgeLengths(mergedSize-1);
+
+    return p;
 }
 
 void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons){
@@ -55,7 +92,8 @@ void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygo
     orgQhull::QhullFacetListIterator k(q.facetList());
 
     // the facet ids are confusing, we want to map the good facets to order of appearance
-    size_t fIdx = 0;
+    // start at one because the root is 0
+    size_t fIdx = 1;
     std::map<size_t, size_t> id_map;
     for (auto e : q.facetList()){
         if(e.isGood()){

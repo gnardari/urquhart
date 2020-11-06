@@ -10,6 +10,7 @@ namespace urquhart {
                 edges = {};
                 edgeLengths = {};
             }
+
             explicit Polygon(PointVector pp, std::vector<int> nn,
                         std::vector<EdgeT> ee, std::vector<double> el){
                 points = pp;
@@ -17,6 +18,14 @@ namespace urquhart {
                 edges = ee;
                 edgeLengths = el;
             }
+
+            void rotate(const size_t idx){
+                std::rotate(neighbors.begin(), neighbors.begin()+idx, neighbors.end());
+                std::rotate(points.begin(), points.begin()+idx, points.end());
+                std::rotate(edges.begin(), edges.begin()+idx, edges.end());
+                std::rotate(edgeLengths.begin(), edgeLengths.begin()+idx, edgeLengths.end());
+            }
+
             PointVector points;
             std::vector<int> neighbors;
             // edges (x,y), undirected and their respective lengths
