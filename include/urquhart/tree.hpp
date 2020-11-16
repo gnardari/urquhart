@@ -3,6 +3,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/reverse_graph.hpp>
+#include <boost/graph/graphviz.hpp>
 
 using namespace boost;
 
@@ -25,6 +26,7 @@ namespace urquhart {
     class Tree {
         public:
             explicit Tree(const std::vector<Polygon>& polygons);
+            void view();
             BoostVertexT merge_op(BoostVertexT i, BoostVertexT j, const Polygon& data);
             Polygon get_vertex(const BoostVertexT v);
             BoostVertexT get_ancestor(const BoostVertexT v);

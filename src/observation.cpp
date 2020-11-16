@@ -1,7 +1,6 @@
 #include <observation.hpp>
 
-namespace urquhart
-{
+namespace urquhart{
 
 Observation::Observation(PointVector& landmarks){
     std::vector<Polygon> triangles;
@@ -36,8 +35,8 @@ void Observation::urquhartTesselation_(){
 
             // neighId also points to the id of the common edge in p.edges
             Polygon merged = mergePolygons_(p, n, neighId);
+            H->merge_op(leafAncIdx, neighAncIdx, merged);
         }
-
     }
 }
 
@@ -54,20 +53,35 @@ Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
    std::vector<EdgeT>::iterator it = std::find_if(n.edges.begin(), n.edges.end(),
         [&commonEdge](EdgeT e){
             if(e.first == commonEdge.first && e.second == commonEdge.second) return True;
-            if(e.second == commonEdge.first && e.first == commonEdge.second) {std::cout << "hey" << std::endl; return True;}
+            if(e.second == commonEdge.first && e.first == commonEdge.second) {return True;}
             return False;
         });
 
-    std::cout << it - n.edges.begin() << " will be first" << std::endl;
     n.rotate(it - n.edges.begin());
 
     size_t mergedSize = p.points.size() + n.points.size();
-    PointVector points(mergedSize);
-    std::vector<int> neighbors(mergedSize-1);
-    std::vector<EdgeT> edges(mergedSize-1);
-    std::vector<double> edgeLengths(mergedSize-1);
+    PointVector points;
+    points.reserve(mergedSize);
+    points.insert(points.end(), p.points.begin(), p.points.end()-1);
+    points.insert(points.end(), n.points.begin()+1, n.points.end());
 
-    return p;
+    std::vector<int> neighbors;
+    neighbors.reserve(mergedSize-1);
+    neighbors.insert(neighbors.end(), p.neighbors.begin(), p.neighbors.end()-1);
+    neighbors.insert(neighbors.end(), n.neighbors.begin()+1, n.neighbors.end());
+
+    std::vector<EdgeT> edges;
+    edges.reserve(mergedSize-1);
+    edges.insert(edges.end(), p.edges.begin(), p.edges.end()-1);
+    edges.insert(edges.end(), n.edges.begin()+1, n.edges.end());
+
+    std::vector<double> edgeLengths;
+    edgeLengths.reserve(mergedSize-1);
+    edgeLengths.insert(edgeLengths.end(), p.edgeLengths.begin(), p.edgeLengths.end()-1);
+    edgeLengths.insert(edgeLengths.end(), n.edgeLengths.begin()+1, n.edgeLengths.end());
+    Polygon merged(points, neighbors, edges, edgeLengths);
+
+    return merged;
 }
 
 void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons){

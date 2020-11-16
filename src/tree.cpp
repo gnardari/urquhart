@@ -1,5 +1,4 @@
 #include <tree.hpp>
-// #include <boost/graph/graphviz.hpp>
 
 namespace urquhart {
 
@@ -11,7 +10,10 @@ Tree::Tree(const std::vector<Polygon>& polygons){
         BoostVertexT v = add_vertex(p, graph);
         add_edge(root, v, graph);
     }
-    // write_graphviz(std::cout, graph);
+}
+
+void Tree::view(){
+    write_graphviz(std::cout, graph);
 }
 
 Polygon Tree::get_vertex(const BoostVertexT v){
