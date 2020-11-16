@@ -1,4 +1,5 @@
 #pragma once
+#include <descriptor.hpp>
 #include <utils.hpp>
 
 namespace urquhart {
@@ -9,6 +10,7 @@ namespace urquhart {
                 neighbors = {};
                 edges = {};
                 edgeLengths = {};
+                descriptor = {};
             }
 
             explicit Polygon(PointVector pp, std::vector<int> nn,
@@ -17,6 +19,7 @@ namespace urquhart {
                 neighbors = nn;
                 edges = ee;
                 edgeLengths = el;
+                descriptor = descriptor::compute(pp);
             }
 
             void rotate(const size_t idx){
@@ -31,5 +34,6 @@ namespace urquhart {
             // edges (x,y), undirected and their respective lengths
             std::vector<EdgeT> edges;
             std::vector<double> edgeLengths;
+            std::vector<double> descriptor;
     };
 }

@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
-find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 
 SET(qhullDir "/usr/local/")
@@ -39,7 +39,7 @@ add_executable(UrquhartNode
     src/descriptor.cpp  
     )
 
-target_include_directories(UrquhartNode PUBLIC include ${catkin_INCLUDE_DIRS}, ${Boost_INCLUDE_DIR})
-target_link_libraries(UrquhartNode PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${qhullLibs})
+target_include_directories(UrquhartNode PUBLIC include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+target_link_libraries(UrquhartNode PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${qhullLibs})
 SET_TARGET_PROPERTIES(UrquhartNode PROPERTIES
  COMPILE_DEFINITIONS "qh_QHpointer")

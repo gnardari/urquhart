@@ -78,5 +78,4 @@ std::vector<BoostVertexT> Tree::traverse(const BoostVertexT v){
     breadth_first_search(graph, v, visitor(vis));
     return polygons;
 }
-
 }
