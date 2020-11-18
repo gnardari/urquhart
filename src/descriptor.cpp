@@ -71,7 +71,9 @@ std::vector<double> centroidDist(PointVector points, PointVector sampledPoints){
 std::vector<double> invariantFourier(std::vector<double> centroidDesc){
     std::vector<double> dftDesc;
     cv::dft(centroidDesc, dftDesc);
-    std::for_each(dftDesc.begin(), dftDesc.end(), [](double &n){std::abs(n);});
+    for(auto& e : dftDesc){
+        e = std::abs(e);
+    }
     return dftDesc;
 }
 

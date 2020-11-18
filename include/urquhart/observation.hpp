@@ -20,6 +20,7 @@ namespace urquhart {
         public:
             explicit Observation(PointVector& landmarks);
         private:
+            PointVector landmarks;
             Tree* H;
             void computeDescriptor_();
             void urquhartTesselation_();

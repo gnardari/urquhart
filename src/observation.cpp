@@ -2,11 +2,13 @@
 
 namespace urquhart{
 
-Observation::Observation(PointVector& landmarks){
+Observation::Observation(PointVector& points){
+    landmarks = points;
     std::vector<Polygon> triangles;
-    delaunayTriangulation_(landmarks, triangles);
+    delaunayTriangulation_(points, triangles);
     H = new Tree(triangles);
     urquhartTesselation_();
+    // H->view();
 };
 
 void Observation::urquhartTesselation_(){
@@ -14,11 +16,13 @@ void Observation::urquhartTesselation_(){
     for(size_t leaf : leaves){
         Polygon p = H->get_vertex(leaf);
         int neighId = -1;
+        int neighPos = -1;
         double longestEdgeLen = -1;
         for(int i=0; i < p.edgeLengths.size(); ++i){
             if(p.edgeLengths[i] > longestEdgeLen){
                 longestEdgeLen = p.edgeLengths[i];
                 neighId = p.neighbors[i];
+                neighPos = i;
             }
         }
         if(neighId == -1) continue;
@@ -33,8 +37,7 @@ void Observation::urquhartTesselation_(){
             if(neighAncIdx != neighId)
                 n = H->get_vertex(neighAncIdx);
 
-            // neighId also points to the id of the common edge in p.edges
-            Polygon merged = mergePolygons_(p, n, neighId);
+            Polygon merged = mergePolygons_(p, n, neighPos);
             H->merge_op(leafAncIdx, neighAncIdx, merged);
         }
     }
@@ -53,18 +56,13 @@ Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
    std::vector<EdgeT>::iterator it = std::find_if(n.edges.begin(), n.edges.end(),
         [&commonEdge](EdgeT e){
             if(e.first == commonEdge.first && e.second == commonEdge.second) return True;
-            if(e.second == commonEdge.first && e.first == commonEdge.second) {return True;}
+            if(e.second == commonEdge.first && e.first == commonEdge.second) return True;
             return False;
         });
 
     n.rotate(it - n.edges.begin());
 
     size_t mergedSize = p.points.size() + n.points.size();
-    PointVector points;
-    points.reserve(mergedSize);
-    points.insert(points.end(), p.points.begin(), p.points.end()-1);
-    points.insert(points.end(), n.points.begin()+1, n.points.end());
-
     std::vector<int> neighbors;
     neighbors.reserve(mergedSize-1);
     neighbors.insert(neighbors.end(), p.neighbors.begin(), p.neighbors.end()-1);
@@ -79,6 +77,11 @@ Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
     edgeLengths.reserve(mergedSize-1);
     edgeLengths.insert(edgeLengths.end(), p.edgeLengths.begin(), p.edgeLengths.end()-1);
     edgeLengths.insert(edgeLengths.end(), n.edgeLengths.begin()+1, n.edgeLengths.end());
+
+    PointVector points;
+    for(auto e : edges){
+        points.push_back(landmarks[e.first]);
+    }
     Polygon merged(points, neighbors, edges, edgeLengths);
 
     return merged;

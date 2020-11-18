@@ -20,6 +20,14 @@ namespace urquhart {
                 edges = ee;
                 edgeLengths = el;
                 descriptor = descriptor::compute(pp);
+                // std::cout << "Creating new polygon\n Neighbors:" << std::endl;
+                // for(auto n : neighbors){
+                //     std::cout << n << ", ";
+                // }
+                // std::cout << std::endl;
+                // for(auto i = 0; i < ee.size(); ++i){
+                //     std::cout << "Len: " << edgeLengths[i] << "| " << ee[i].first << " -> " << ee[i].second << std::endl;
+                // }
             }
 
             void rotate(const size_t idx){
