@@ -65,6 +65,16 @@ BoostVertexT Tree::get_ancestor(const BoostVertexT v){
     return ancestor;
 }
 
+std::vector<BoostVertexT> Tree::get_children(const BoostVertexT v){
+    std::vector<BoostVertexT> polygons;
+    BoostEdgeIter ei, ei_end;
+    for (boost::tie(ei, ei_end) = out_edges(v, graph); ei != ei_end; ++ei) {
+        auto child = target(*ei, graph);
+        polygons.push_back(child);
+    }
+    return polygons;
+}
+
 std::vector<BoostVertexT> Tree::traverse(){
     std::vector<BoostVertexT> polygons;
     BFSVisitor vis(polygons);

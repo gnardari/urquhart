@@ -37,6 +37,7 @@ add_executable(UrquhartNode
     src/tree.cpp  
     src/utils.cpp  
     src/descriptor.cpp  
+    src/matching.cpp  
     )
 
 target_include_directories(UrquhartNode PUBLIC include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})

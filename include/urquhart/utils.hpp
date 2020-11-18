@@ -12,4 +12,4 @@ using PointT  = std::vector<double>;
 using EdgeT = std::pair<int,int>;
 using PointVector = std::vector<PointT>;
 
-double euclideanDistance(PointT A, PointT B);
+double euclideanDistance(std::vector<double> A, std::vector<double> B);

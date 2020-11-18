@@ -1,3 +1,5 @@
+#pragma once
+
 #include <utils.hpp>
 #include <polygon.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -30,6 +32,7 @@ namespace urquhart {
             BoostVertexT merge_op(BoostVertexT i, BoostVertexT j, const Polygon& data);
             Polygon get_vertex(const BoostVertexT v);
             BoostVertexT get_ancestor(const BoostVertexT v);
+            std::vector<BoostVertexT> get_children(const BoostVertexT v);
             std::vector<BoostVertexT> traverse();
             std::vector<BoostVertexT> traverse(const BoostVertexT v);
             BoostGraph graph;

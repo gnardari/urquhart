@@ -1,3 +1,5 @@
+#pragma once
+
 #include <utils.hpp>
 #include <polygon.hpp>
 #include <tree.hpp>
@@ -19,9 +21,9 @@ namespace urquhart {
     class Observation {
         public:
             explicit Observation(PointVector& landmarks);
+            Tree* H;
         private:
             PointVector landmarks;
-            Tree* H;
             void computeDescriptor_();
             void urquhartTesselation_();
             void delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons);
