@@ -37,5 +37,6 @@ namespace urquhart {
             std::vector<BoostVertexT> traverse(const BoostVertexT v);
             BoostGraph graph;
             BoostVertexT root;
+            std::set<BoostVertexT> zombies;
     };
 }

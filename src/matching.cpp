@@ -9,7 +9,7 @@ void polygonMatching(
 
      std::set<size_t> matched;
      for(auto rIdx : refIds){
-         size_t bestMach = -1;
+         size_t bestMatch = 0;
          size_t bestDist = 100000;
          urquhart::Polygon rp = ref.H->get_vertex(rIdx);
          for(auto tIdx : targIds){
@@ -18,15 +18,17 @@ void polygonMatching(
              if(matched.find(tIdx) == matched.end() &&
                 std::abs(int(rp.points.size() - tp.points.size())) <= 3){
                  double d = euclideanDistance(rp.descriptor, tp.descriptor);
+                 std::cout << "Distance: " << d << std::endl;
                  if(d < bestDist){
                      bestDist = d;
-                     bestMach = tIdx;
+                     bestMatch = tIdx;
                  }
              }
          }
+
          if(bestDist < thresh){
-             matched.insert(bestMach);
-             std::pair<size_t, size_t> m = std::make_pair(rIdx, bestMach);
+             matched.insert(bestMatch);
+             std::pair<size_t, size_t> m = std::make_pair(rIdx, bestMatch);
              polygonMatches.push_back(m);
          }
      }

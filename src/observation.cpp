@@ -36,7 +36,6 @@ void Observation::urquhartTesselation_(){
             Polygon n = H->get_vertex(neighId);
             if(neighAncIdx != neighId)
                 n = H->get_vertex(neighAncIdx);
-
             Polygon merged = mergePolygons_(p, n, neighPos);
             H->merge_op(leafAncIdx, neighAncIdx, merged);
         }
@@ -61,29 +60,46 @@ Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
         });
 
     n.rotate(it - n.edges.begin());
-
-    size_t mergedSize = p.points.size() + n.points.size();
+    size_t mergedSize = (p.edges.size() + n.edges.size())-2;
     std::vector<int> neighbors;
-    neighbors.reserve(mergedSize-1);
+    // std::cout << "11111" << std::endl;
+    // // neighbors.reserve(mergedSize);
+    // for(auto x : p.neighbors){
+    //     std::cout << x << ", ";
+    // }
+    // std::cout << std::endl;
+
+    // for(auto x : n.neighbors){
+    //     std::cout << x << ", ";
+    // }
+    // std::cout << std::endl;
+
+    // std::cout << "-------------------------" << std::endl;
+
     neighbors.insert(neighbors.end(), p.neighbors.begin(), p.neighbors.end()-1);
     neighbors.insert(neighbors.end(), n.neighbors.begin()+1, n.neighbors.end());
 
+    // std::cout << "22222" << std::endl;
     std::vector<EdgeT> edges;
-    edges.reserve(mergedSize-1);
+    // edges.reserve(mergedSize);
     edges.insert(edges.end(), p.edges.begin(), p.edges.end()-1);
     edges.insert(edges.end(), n.edges.begin()+1, n.edges.end());
 
+//    std::cout << "333333" << std::endl;
     std::vector<double> edgeLengths;
-    edgeLengths.reserve(mergedSize-1);
+    // edgeLengths.reserve(mergedSize);
     edgeLengths.insert(edgeLengths.end(), p.edgeLengths.begin(), p.edgeLengths.end()-1);
     edgeLengths.insert(edgeLengths.end(), n.edgeLengths.begin()+1, n.edgeLengths.end());
 
     PointVector points;
+    // std::cout << "HAAAA" << std::endl;
     for(auto e : edges){
+        // std::cout << "f: " << e.first << std::endl;
         points.push_back(landmarks[e.first]);
     }
     Polygon merged(points, neighbors, edges, edgeLengths);
 
+    // std::cout << "DIBE" << std::endl;
     return merged;
 }
 

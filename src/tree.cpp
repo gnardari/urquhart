@@ -30,27 +30,31 @@ BoostVertexT Tree::merge_op(BoostVertexT i, BoostVertexT j, const Polygon& data)
     if (graph[i].edges.size() > 3){
         BoostEdgeIter ei, ei_end;
         for (boost::tie(ei, ei_end) = out_edges(i, graph); ei != ei_end; ++ei) {
+            BoostVertexT edgeSource = source(*ei, graph);
             BoostVertexT edgeTarget = target(*ei, graph);
             add_edge(v, edgeTarget, graph);
         } 
-        remove_vertex(i, graph);
+        // clear vertex will maintain an isolated vertex.
+        // This is required so that the ids are consistent.
+        // TODO: Study the boost graph lib to find a more memory-efficient way of doing this
+        clear_vertex(i, graph);
     } else {
         clear_in_edges(i, graph);
         add_edge(v, i, graph);
     }
 
     if (graph[j].edges.size() > 3){
-        BoostEdgeIter ei, ei_end;
-        for (boost::tie(ei, ei_end) = out_edges(j, graph); ei != ei_end; ++ei) {
-            BoostVertexT edgeTarget = target(*ei, graph);
+        BoostEdgeIter ej, ej_end;
+        for (boost::tie(ej, ej_end) = out_edges(j, graph); ej != ej_end; ++ej) {
+            BoostVertexT edgeSource = source(*ej, graph);
+            BoostVertexT edgeTarget = target(*ej, graph);
             add_edge(v, edgeTarget, graph);
         } 
-        remove_vertex(j, graph);
+        clear_vertex(j, graph);
     } else {
         clear_in_edges(j, graph);
         add_edge(v, j, graph);
     }
-
     return v;
 }
 

@@ -35,7 +35,7 @@ PointVector samplePoints(PointVector points, double step){
         if(currLine != 0){
             d = (std::abs(coveredPerim - normalizedAccumLens[currLine-1])/
                 std::abs(normalizedAccumLens[currLine]-normalizedAccumLens[currLine-1]));
-        } else {
+        } else if(coveredPerim > 0){
             d = coveredPerim/normalizedAccumLens[currLine];
         }
 
@@ -49,6 +49,7 @@ PointVector samplePoints(PointVector points, double step){
         sampledPoints.push_back(pt);
         coveredPerim += step;
     }
+
     return sampledPoints;
 }
 
@@ -80,6 +81,8 @@ std::vector<double> invariantFourier(std::vector<double> centroidDesc){
 std::vector<double> compute(PointVector points){
     PointVector sampledPoints = samplePoints(points, 0.05);
     std::vector<double> centrDesc = centroidDist(points, sampledPoints);
-    return invariantFourier(centrDesc);
+    auto inv = invariantFourier(centrDesc);
+
+    return inv;
 }
 }
