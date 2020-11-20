@@ -14,14 +14,19 @@ Boost 1.71.0 (Tree structure that stores the polygons)
 OpenCV 4.2.0 (Discrete fourier transform)
 ```
 
-`test.cpp` gives a simple example on how to use this package.
+You can run an example based on `test.cpp`
+```
+// add this package to my_workspace/src
+catkin_make
+source devel/setup.bash
+rosrun urquhart UrquhartNode PATH/TO/example/obsA.txt PATH/TO/example/obsA.txt/example/obsB.txt
+```
 
 ### ROS
-An example ROS node will be provided soon.
-
+Since most of the use cases of this package will be with ROS, we use catkin to compile. However, it should be simple to use with CMake only.
 
 ### Citing
-If you use this code, please cite it
+If you use this code, please cite
 
 ```
 @inproceedings{nardari2020,
