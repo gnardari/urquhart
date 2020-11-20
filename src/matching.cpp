@@ -18,7 +18,6 @@ void polygonMatching(
              if(matched.find(tIdx) == matched.end() &&
                 std::abs(int(rp.points.size() - tp.points.size())) <= 3){
                  double d = euclideanDistance(rp.descriptor, tp.descriptor);
-                //  std::cout << "Distance: " << d << std::endl;
                  if(d < bestDist){
                      bestDist = d;
                      bestMatch = tIdx;
@@ -36,15 +35,16 @@ void polygonMatching(
 
 void linePointMatching(const urquhart::Polygon& A, const urquhart::Polygon& B,
         std::vector<std::pair<PointT, PointT>>& pointMatches){
+    // chi works as a permutation matrix
     std::vector<size_t> chi = {0,1,2};
     std::vector<size_t> bestPermutation;
     double bestDist = 1000000;
     do {
-        // std::cout << B.edgeLengths[chi[0]] << ' ' << B.edgeLengths[chi[1]] << ' ' << B.edgeLengths[chi[2]] << '\n';
-        std::vector<double> permutation = {B.edgeLengths[chi[0]], B.edgeLengths[chi[1]], B.edgeLengths[chi[2]]};
-        double d = euclideanDistance(A.edgeLengths, permutation);
-        if(d < bestDist){
-            bestDist = d;
+        std::vector<double> permutation = {B.edgeLengths[chi[0]],
+                                    B.edgeLengths[chi[1]], B.edgeLengths[chi[2]]};
+                double d = euclideanDistance(A.edgeLengths, permutation);
+                if(d < bestDist){
+                    bestDist = d;
             bestPermutation = chi;
         }
     } while (std::next_permutation(chi.begin(), chi.end()));
@@ -56,7 +56,9 @@ void linePointMatching(const urquhart::Polygon& A, const urquhart::Polygon& B,
     }
 }
 
-std::vector<std::pair<PointT, PointT>> hierarchyMatching(urquhart::Observation& ref, urquhart::Observation& targ, double thresh){
+std::vector<std::pair<PointT, PointT>> hierarchyMatching(
+    urquhart::Observation& ref, urquhart::Observation& targ, double thresh){
+
     std::vector<size_t> refIds = ref.H->get_children(0);
     std::vector<size_t> targIds = targ.H->get_children(0);
     std::vector<std::pair<size_t, size_t>> polygonMatches;
@@ -68,7 +70,6 @@ std::vector<std::pair<PointT, PointT>> hierarchyMatching(urquhart::Observation& 
         targIds = targ.H->get_children(pMatch.second);
         // TODO: ADD CHECK IF % OF TRIANGLES THAT MACTHED IS LARGER THAN 1/2
         polygonMatching(ref, refIds, targ, targIds, thresh, triangleMatches);
-        // std::copy(matches.begin(), matches.end(), std::back_inserter(triangleMatches));
     }
 
     std::vector<std::pair<PointT,PointT>> pointMatches;
@@ -76,7 +77,6 @@ std::vector<std::pair<PointT, PointT>> hierarchyMatching(urquhart::Observation& 
         urquhart::Polygon rT = ref.H->get_vertex(tMatch.first);
         urquhart::Polygon tT = targ.H->get_vertex(tMatch.second);
         linePointMatching(rT, tT, pointMatches);
-        // std::copy(matches.begin(), matches.end(), std::back_inserter(pointMatches));
     }
     return pointMatches;
 }

@@ -1,6 +1,8 @@
 #include <descriptor.hpp>
 
 namespace descriptor{
+// The accumulated lens could be simplified by using the already available edge lengths.
+// We implemented this way to follow the original code.
 PointVector samplePoints(PointVector points, double step){
     std::vector<PointVector> lineVectors;
     std::vector<double> lineLens;
@@ -32,6 +34,7 @@ PointVector samplePoints(PointVector points, double step){
             currLine++;
             continue;
         }
+        // define how much of the perimeter we should move
         if(currLine != 0){
             d = (std::abs(coveredPerim - normalizedAccumLens[currLine-1])/
                 std::abs(normalizedAccumLens[currLine]-normalizedAccumLens[currLine-1]));
@@ -69,6 +72,8 @@ std::vector<double> centroidDist(PointVector points, PointVector sampledPoints){
     }
     return descriptor;
 }
+
+// based on the official OpenCV tutorial: https://docs.opencv.org/3.4/d8/d01/tutorial_discrete_fourier_transform.html
 std::vector<double> invariantFourier(std::vector<double> centroidDesc){
     std::vector<double> dftDesc;
     cv::Mat matDesc(centroidDesc);
@@ -97,8 +102,6 @@ std::vector<double> invariantFourier(std::vector<double> centroidDesc){
 std::vector<double> compute(PointVector points){
     PointVector sampledPoints = samplePoints(points, 0.05);
     std::vector<double> centrDesc = centroidDist(points, sampledPoints);
-    auto inv = invariantFourier(centrDesc);
-
-    return inv;
+    return invariantFourier(centrDesc);
 }
 }

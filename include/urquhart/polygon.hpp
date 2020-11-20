@@ -30,6 +30,7 @@ namespace urquhart {
                 // }
             }
 
+            // Puts the element in idx at the first position of each vector. Used during merging operations.
             void rotate(const size_t idx){
                 std::rotate(neighbors.begin(), neighbors.begin()+idx, neighbors.end());
                 std::rotate(points.begin(), points.begin()+idx, points.end());
