@@ -14,12 +14,12 @@ Boost 1.71.0 (Tree structure that stores the polygons)
 OpenCV 4.2.0 (Discrete fourier transform)
 ```
 
-You can run an example based on `test.cpp`
+You can run an example based on `example.cpp`
 ```
 // add this package to my_workspace/src
 catkin_make
 source devel/setup.bash
-rosrun urquhart UrquhartNode PATH/TO/example/obsA.txt PATH/TO/example/obsB.txt
+rosrun urquhart UrquhartExample PATH/TO/example/obsA.txt PATH/TO/example/obsB.txt
 ```
 
 ### ROS

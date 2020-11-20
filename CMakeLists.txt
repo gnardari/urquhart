@@ -31,8 +31,8 @@ catkin_package(
    roscpp
    DEPENDS)
 
-add_executable(UrquhartNode
-    src/test.cpp
+add_executable(UrquhartExample
+    example/example.cpp
     src/observation.cpp  
     src/tree.cpp  
     src/utils.cpp  
@@ -40,7 +40,7 @@ add_executable(UrquhartNode
     src/matching.cpp  
     )
 
-target_include_directories(UrquhartNode PUBLIC include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
-target_link_libraries(UrquhartNode PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${qhullLibs})
-SET_TARGET_PROPERTIES(UrquhartNode PROPERTIES
+target_include_directories(UrquhartExample PUBLIC include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+target_link_libraries(UrquhartExample PUBLIC ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${qhullLibs})
+SET_TARGET_PROPERTIES(UrquhartExample PROPERTIES
  COMPILE_DEFINITIONS "qh_QHpointer")
