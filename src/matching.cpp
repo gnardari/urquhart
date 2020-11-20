@@ -18,7 +18,7 @@ void polygonMatching(
              if(matched.find(tIdx) == matched.end() &&
                 std::abs(int(rp.points.size() - tp.points.size())) <= 3){
                  double d = euclideanDistance(rp.descriptor, tp.descriptor);
-                 std::cout << "Distance: " << d << std::endl;
+                //  std::cout << "Distance: " << d << std::endl;
                  if(d < bestDist){
                      bestDist = d;
                      bestMatch = tIdx;

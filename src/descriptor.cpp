@@ -71,9 +71,25 @@ std::vector<double> centroidDist(PointVector points, PointVector sampledPoints){
 }
 std::vector<double> invariantFourier(std::vector<double> centroidDesc){
     std::vector<double> dftDesc;
-    cv::dft(centroidDesc, dftDesc);
-    for(auto& e : dftDesc){
-        e = std::abs(e);
+    cv::Mat matDesc(centroidDesc);
+    cv::Mat planes[] = {matDesc,
+                        cv::Mat::zeros(cv::Size(1, centroidDesc.size()), CV_64FC1)};
+    cv::Mat complexI;
+    cv::merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
+    cv::dft(complexI, complexI);            // this way the result may fit in the source matrix
+    // compute the magnitude
+    cv::split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+    cv::magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+    cv::Mat magI = planes[0];
+
+    if (magI.isContinuous()) {
+        dftDesc.assign((double*)magI.data, (double*)magI.data + magI.total()*magI.channels());
+    } else {
+        for (int i = 0; i < magI.rows; ++i) {
+            dftDesc.insert(
+                dftDesc.end(),
+                magI.ptr<double>(i), magI.ptr<double>(i)+magI.cols*magI.channels());
+        }
     }
     return dftDesc;
 }
