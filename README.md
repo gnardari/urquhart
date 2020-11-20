@@ -19,11 +19,11 @@ You can run an example based on `test.cpp`
 // add this package to my_workspace/src
 catkin_make
 source devel/setup.bash
-rosrun urquhart UrquhartNode PATH/TO/example/obsA.txt PATH/TO/example/obsA.txt/example/obsB.txt
+rosrun urquhart UrquhartNode PATH/TO/example/obsA.txt PATH/TO/example/obsB.txt
 ```
 
 ### ROS
-Since most of the use cases of this package will be with ROS, we use catkin to compile. However, it should be simple to use with CMake only.
+Since most of the use cases of this package will be with ROS, we use catkin to compile it. However, it should be simple to use with CMake only.
 
 ### Citing
 If you use this code, please cite
