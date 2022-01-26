@@ -39,14 +39,15 @@ int main(int argc, char* argv[]){
         urquhart::Observation obs(points);
         obs.view();
 
-        // PointVector pointsr = readFile(string(argv[2]));
-        // urquhart::Observation obsr(pointsr);
-        //
-        // auto matches = matching::hierarchyMatching(obs, obsr, 5);
-        // for(auto m : matches){
-        //     std::cout << m.first[0] << "," << m.first[1] << ",";
-        //     std::cout << m.second[0] << "," << m.second[1] << std::endl;
-        // }
+        PointVector pointsr = readFile(string(argv[2]));
+        urquhart::Observation obsr(pointsr);
+        obsr.view();
+
+        auto matches = matching::hierarchyMatching(obs, obsr, 5);
+        for(auto m : matches){
+            std::cout << m.first[0] << "," << m.first[1] << ",";
+            std::cout << m.second[0] << "," << m.second[1] << std::endl;
+        }
         return 0;
 
     } else {
