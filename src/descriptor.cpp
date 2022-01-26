@@ -8,11 +8,11 @@ PointVector samplePoints(PointVector points, double step){
     std::vector<double> lineLens;
     for(size_t i = 0; i < points.size(); ++i){
         size_t modI = (i+1) % points.size();
-        PointT lineStart = {points[i][0], points[i][1]};
-        PointT lineEnd = {points[modI][0], points[modI][1]};
+        vecPtT lineStart = {points[i][0], points[i][1]};
+        vecPtT lineEnd = {points[modI][0], points[modI][1]};
         PointVector line = {lineStart, lineEnd};
         lineVectors.push_back(line);
-        lineLens.push_back(euclideanDistance(lineStart, lineEnd));
+        lineLens.push_back(euclideanDistance2D(lineStart, lineEnd));
     }
     std::vector<double> normalizedAccumLens;
     double totalLen = std::accumulate(lineLens.begin(), lineLens.end(), 0.0);
@@ -44,11 +44,11 @@ PointVector samplePoints(PointVector points, double step){
 
         // get point relative to current % of line segment
         PointVector l = lineVectors[currLine];
-        PointT a = l[0];
-        PointT b = l[1];
+        vecPtT a = l[0];
+        vecPtT b = l[1];
         double px = a[0] + d * (b[0] - a[0]);
         double py = a[1] + d * (b[1] - a[1]);
-        PointT pt = {px, py};
+        vecPtT pt = {px, py};
         sampledPoints.push_back(pt);
         coveredPerim += step;
     }
@@ -57,8 +57,8 @@ PointVector samplePoints(PointVector points, double step){
 }
 
 std::vector<double> centroidDist(PointVector points, PointVector sampledPoints){
-    PointT centroid(2, 0);
-    for(PointT p : points){
+    vecPtT centroid(2, 0);
+    for(vecPtT p : points){
         centroid[0] += p[0];
         centroid[1] += p[1];
     }
@@ -67,8 +67,8 @@ std::vector<double> centroidDist(PointVector points, PointVector sampledPoints){
 
     std::vector<double> descriptor;
     descriptor.reserve(sampledPoints.size());
-    for(PointT sp : sampledPoints){
-        descriptor.push_back(euclideanDistance(sp, centroid));
+    for(vecPtT sp : sampledPoints){
+        descriptor.push_back(euclideanDistance2D(sp, centroid));
     }
     return descriptor;
 }

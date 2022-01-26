@@ -8,8 +8,12 @@ Observation::Observation(PointVector& points){
     delaunayTriangulation_(points, triangles);
     H = new Tree(triangles);
     urquhartTesselation_();
-    // H->view();
 };
+
+void Observation::view()
+{
+    H->view_h2_polygons();
+}
 
 void Observation::urquhartTesselation_(){
     std::vector<size_t> leaves = H->traverse();
@@ -19,6 +23,7 @@ void Observation::urquhartTesselation_(){
         int neighPos = -1;
         double longestEdgeLen = -1;
         for(int i=0; i < p.edgeLengths.size(); ++i){
+            auto ll = p.edgeLengths[i];
             if(p.edgeLengths[i] > longestEdgeLen){
                 longestEdgeLen = p.edgeLengths[i];
                 neighId = p.neighbors[i];
@@ -27,52 +32,60 @@ void Observation::urquhartTesselation_(){
         }
         if(neighId == -1) continue;
 
+        EdgeT commonEdge = p.edges[neighPos];
         // we drop edges based on triangles,
         // but we must merge the highest available polygon that leaf is part of
         // (could be itself if it wasn't part of a merge operation before)
         size_t leafAncIdx = H->get_ancestor(leaf);
         size_t neighAncIdx = H->get_ancestor(neighId);
         if(leafAncIdx != neighAncIdx){
-            Polygon n = H->get_vertex(neighId);
-            if(neighAncIdx != neighId)
-                n = H->get_vertex(neighAncIdx);
-            Polygon merged = mergePolygons_(p, n, neighPos);
-            H->merge_op(leafAncIdx, neighAncIdx, merged);
+            Polygon n = H->get_vertex(neighAncIdx);
+
+            if(leafAncIdx != leaf)
+                p = H->get_vertex(leafAncIdx);
+
+            Polygon merged = mergePolygons_(p, n, commonEdge);
+            if (merged.points.size() != 0)
+            {
+                H->merge_op(leafAncIdx, neighAncIdx, merged);
+            } 
         }
     }
 }
 
-Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
-    /*
-    (0,1), (1,2), (2,0)
-                        => (0,1), (1,2), (2,0), (4,0)
-    (2,0), (0,4), (4,2)
-    */
-   // rotates puts idx as first element, for p we want the common edge to be the last elem
-   p.rotate((commonEdgeIdx+1)%3);
-   EdgeT commonEdge = p.edges[commonEdgeIdx];
-
-   std::vector<EdgeT>::iterator it = std::find_if(n.edges.begin(), n.edges.end(),
-        [&commonEdge](EdgeT e){
-            if(e.first == commonEdge.first && e.second == commonEdge.second) return True;
-            if(e.second == commonEdge.first && e.first == commonEdge.second) return True;
-            return False;
-        });
-
-    n.rotate(it - n.edges.begin());
-    size_t mergedSize = (p.edges.size() + n.edges.size())-2;
+Polygon Observation::combinePolygonData_(const Polygon& p, const Polygon& n)
+{
+    bool same_direction = n.edges[0].first == p.edges[p.edges.size()-1].first;
     std::vector<int> neighbors;
-
-    neighbors.insert(neighbors.end(), p.neighbors.begin(), p.neighbors.end()-1);
-    neighbors.insert(neighbors.end(), n.neighbors.begin()+1, n.neighbors.end());
-
     std::vector<EdgeT> edges;
-    edges.insert(edges.end(), p.edges.begin(), p.edges.end()-1);
-    edges.insert(edges.end(), n.edges.begin()+1, n.edges.end());
-
     std::vector<double> edgeLengths;
-    edgeLengths.insert(edgeLengths.end(), p.edgeLengths.begin(), p.edgeLengths.end()-1);
-    edgeLengths.insert(edgeLengths.end(), n.edgeLengths.begin()+1, n.edgeLengths.end());
+    if(same_direction)
+    {
+        neighbors.insert(neighbors.end(), p.neighbors.begin(), p.neighbors.end()-1);
+        neighbors.insert(neighbors.end(), n.neighbors.rbegin(), n.neighbors.rend()-1);
+
+        edges.insert(edges.end(), p.edges.begin(), p.edges.end()-1);
+        // edges.insert(edges.end(), n.edges.rbegin(), n.edges.rend()-1);
+        for(int i = n.edges.size()-1; i != 0; --i)
+        {
+            const EdgeT& e = n.edges[i];
+            edges.push_back(std::make_pair(e.second, e.first));
+        }
+        
+        edgeLengths.insert(edgeLengths.end(), p.edgeLengths.begin(), p.edgeLengths.end()-1);
+        edgeLengths.insert(edgeLengths.end(), n.edgeLengths.rbegin(), n.edgeLengths.rend()-1);
+        
+    } else 
+    {
+        neighbors.insert(neighbors.end(), p.neighbors.begin(), p.neighbors.end()-1);
+        neighbors.insert(neighbors.end(), n.neighbors.begin()+1, n.neighbors.end());
+        
+        edges.insert(edges.end(), p.edges.begin(), p.edges.end()-1);
+        edges.insert(edges.end(), n.edges.begin()+1, n.edges.end());
+        
+        edgeLengths.insert(edgeLengths.end(), p.edgeLengths.begin(), p.edgeLengths.end()-1);
+        edgeLengths.insert(edgeLengths.end(), n.edgeLengths.begin()+1, n.edgeLengths.end());
+    }
 
     PointVector points;
     for(auto e : edges){
@@ -81,6 +94,41 @@ Polygon Observation::mergePolygons_(Polygon p, Polygon n, size_t commonEdgeIdx){
 
     Polygon merged(points, neighbors, edges, edgeLengths);
     return merged;
+}
+
+std::vector<EdgeT>::iterator Observation::findEdge_(Polygon& x, EdgeT commonEdge)
+{
+   std::vector<EdgeT>::iterator it = std::find_if(x.edges.begin(), x.edges.end(),
+        [&commonEdge](EdgeT e){
+            if(e.first == commonEdge.first && e.second == commonEdge.second) return True;
+            if(e.second == commonEdge.first && e.first == commonEdge.second) return True;
+            return False;
+        });    
+    return it;
+}
+
+Polygon Observation::mergePolygons_(Polygon& p, Polygon& n, EdgeT commonEdge){
+    /*
+    (0,1), (1,2), (2,0)
+                        => (0,1), (1,2), (2,4), (4,0)
+    (2,0), (0,4), (4,2)
+    */
+
+   // rotates puts idx as first element, for p we want the common edge to be the last elem
+   // we want the element after commonEdge to be the first, i.e. commonEdge is the last element
+   
+   auto p_it = findEdge_(p, commonEdge);
+   auto commonEdgeIdx = p_it - p.edges.begin();
+   p.rotate((commonEdgeIdx+1)%p.edges.size());
+
+   auto n_it = findEdge_(n, commonEdge);
+   if(n_it == n.edges.end())
+       return Polygon();
+
+   n.rotate(n_it - n.edges.begin());
+   Polygon merged = combinePolygonData_(p, n);
+    
+   return merged;
 }
 
 void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygon>& polygons){
@@ -151,7 +199,7 @@ void Observation::delaunayTriangulation_(PointVector& points, std::vector<Polygo
             if(endIdx == vtxIds.size())
                 endIdx = 0;
             auto edge = std::make_pair(vtxIds[i], vtxIds[endIdx]);
-            double len = euclideanDistance(points[edge.first], points[edge.second]);
+            double len = euclideanDistance2D(points[edge.first], points[edge.second]);
             edges.push_back(edge);
             edgeLengths.push_back(len);
         }

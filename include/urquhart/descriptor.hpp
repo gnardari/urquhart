@@ -1,6 +1,6 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#include <utils.hpp>
+#include <distance.hpp>
 
 namespace descriptor{
     // Samples points around the perimeter of a polygon and returns a new set of points.

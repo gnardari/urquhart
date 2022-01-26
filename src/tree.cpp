@@ -12,8 +12,23 @@ Tree::Tree(const std::vector<Polygon>& polygons){
     }
 }
 
-void Tree::view(){
+void Tree::view_tree(){
     write_graphviz(std::cout, graph);
+}
+
+void Tree::view_h2_polygons(){
+    auto polygons = get_children(root);
+    size_t i = 0;
+    for(auto p : polygons)
+    {
+        std::cout << i << ": ";
+        for(auto e : graph[p].edges)
+        {
+            std::cout << "[" << e.first << "," << e.second << "] ";
+        }
+        std::cout << std::endl;
+        i++;
+    }
 }
 
 Polygon Tree::get_vertex(const BoostVertexT v){

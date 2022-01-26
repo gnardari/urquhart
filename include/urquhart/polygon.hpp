@@ -1,6 +1,6 @@
 #pragma once
 #include <descriptor.hpp>
-#include <utils.hpp>
+#include <distance.hpp>
 
 namespace urquhart {
     class Polygon {

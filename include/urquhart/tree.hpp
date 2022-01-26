@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utils.hpp>
+#include <distance.hpp>
 #include <polygon.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
@@ -28,7 +28,8 @@ namespace urquhart {
     class Tree {
         public:
             explicit Tree(const std::vector<Polygon>& polygons);
-            void view();
+            void view_tree();
+            void view_h2_polygons();
             // Merges two polygons of the tree. If i or j have more than 3 vertices, they are
             // disconnected from the main structure and their children are connected to the new polygon.
             // They are not deleted to keep the incremental indices (this could be improved to reduce memory consumption).

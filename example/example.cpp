@@ -1,6 +1,5 @@
 #include <matching.hpp>
 #include <observation.hpp>
-#include <utils.hpp>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -17,7 +16,7 @@ PointVector readFile(string path){
         if (!getline(infile, s)) break;
 
         istringstream ss(s);
-        PointT record;
+        vecPtT record;
 
         while (ss){
         string s;
@@ -38,15 +37,16 @@ int main(int argc, char* argv[]){
     if(argc > 2){
         PointVector points = readFile(string(argv[1]));
         urquhart::Observation obs(points);
+        obs.view();
 
-        PointVector pointsr = readFile(string(argv[2]));
-        urquhart::Observation obsr(pointsr);
-
-        auto matches = matching::hierarchyMatching(obs, obsr, 5);
-        for(auto m : matches){
-            std::cout << m.first[0] << "," << m.first[1] << ",";
-            std::cout << m.second[0] << "," << m.second[1] << std::endl;
-        }
+        // PointVector pointsr = readFile(string(argv[2]));
+        // urquhart::Observation obsr(pointsr);
+        //
+        // auto matches = matching::hierarchyMatching(obs, obsr, 5);
+        // for(auto m : matches){
+        //     std::cout << m.first[0] << "," << m.first[1] << ",";
+        //     std::cout << m.second[0] << "," << m.second[1] << std::endl;
+        // }
         return 0;
 
     } else {

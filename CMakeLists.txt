@@ -35,7 +35,6 @@ add_executable(UrquhartExample
     example/example.cpp
     src/observation.cpp  
     src/tree.cpp  
-    src/utils.cpp  
     src/descriptor.cpp  
     src/matching.cpp  
     )
